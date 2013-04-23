@@ -15,14 +15,14 @@ class Board
   end
 
   def setup_pieces(color)
-    pawn_row, back_row = (color == :w) ? [6,7] : [1,0]
+    p_row, b_row = (color == :w) ? [6,7] : [1,0]
 
-    (0..7).each {|col| @grid[pawn_row][col] = Pawn.new(color, [pawn_row,col])}
-    [0,7].each {|col| @grid[back_row][col] = Rook.new(color, [back_row,col])}
-    [1,6].each {|col| @grid[back_row][col] = Knight.new(color, [back_row, col])}
-    [2,5].each {|col| @grid[back_row][col] = Bishop.new(color, [back_row, col])}
-    @grid[back_row][3] = Queen.new(color, [back_row,3])
-    @grid[back_row][4] = King.new(color, [back_row,3])
+    (0..7).each {|col| @grid[p_row][col] = Pawn.new(color, [p_row,col],self)}
+    [0,7].each {|col| @grid[b_row][col] = Rook.new(color, [b_row,col],self)}
+    [1,6].each {|col| @grid[b_row][col] = Knight.new(color, [b_row, col],self)}
+    [2,5].each {|col| @grid[b_row][col] = Bishop.new(color, [b_row, col],self)}
+    @grid[b_row][3] = Queen.new(color, [b_row,3], self)
+    @grid[b_row][4] = King.new(color, [b_row,3], self)
   end
 
   def display
@@ -38,9 +38,12 @@ class Board
     r
   end
 
+  def get_piece(coords)
+    @grid[coords[0]][coords[1]]
+  end
+
   def piece_at(pos)
-    x, y = self.pos_to_coords(pos)
-    @grid[x][y]
+    get_piece(self.pos_to_coords(pos))
   end
 
   def move(start, finish)
@@ -75,11 +78,16 @@ class Board
 end
 
 class Piece
-  attr_accessor :coords, :color, :rep
+  attr_accessor :coords, :color, :rep, :board
 
-  def initialize(color, coords)
+  def initialize(color, coords, board)
     @color = color
     @coords = coords
+    @board = board
+  end
+
+  def same_color?(other_piece)
+    other_piece.color == @color
   end
 
   def move_set
@@ -88,8 +96,8 @@ class Piece
 end
 
 class Knight < Piece
-  def initialize(color, coords)
-    super(color, coords)
+  def initialize(color, coords, board)
+    super(color, coords, board)
     case color
     when :w
       @rep = "♘"
@@ -120,22 +128,30 @@ module SlidingMove
   def build_move_set(moves)
     possible_moves = []
     x,y = coords
+
     moves.each do |dx, dy|
       (1..7).each do |i|
-        # sq_to_add = [x + i*dx, y + i*dy]
-        # if square_clear?(sq_to_add) then add that square to possible_moves
-        # else break
-        possible_moves << [x + i*dx, y + i*dy]
+        sq_to_add = [x + i*dx, y + i*dy]
+
+        next unless Board.on_board?(sq_to_add)
+        sq_content = @board.get_piece(sq_to_add)
+
+        if sq_content.nil?
+          possible_moves << sq_to_add
+        else
+          (possible_moves << sq_to_add) unless same_color?(sq_content)
+          break
+        end
       end
     end
 
-    possible_moves.select {|coord| Board.on_board?(coord)}
+    possible_moves
   end
 end
 
 class Bishop < Piece
-  def initialize(color, coords)
-    super(color, coords)
+  def initialize(color, coords, board)
+    super(color, coords, board)
     case color
     when :w
       @rep = "♗"
@@ -159,8 +175,8 @@ class Bishop < Piece
 end
 
 class Rook < Piece
-  def initialize(color, coords)
-    super(color, coords)
+  def initialize(color, coords, board)
+    super(color, coords, board)
     case color
     when :w
       @rep = "♖"
@@ -184,8 +200,8 @@ class Rook < Piece
 end
 
 class Queen < Piece
-  def initialize(color, coords)
-    super(color, coords)
+  def initialize(color, coords, board)
+    super(color, coords, board)
     case color
     when :w
       @rep = "♕"
@@ -213,8 +229,8 @@ class Queen < Piece
 end
 
 class King < Piece
-  def initialize(color, coords)
-    super(color, coords)
+  def initialize(color, coords, board)
+    super(color, coords, board)
     case color
     when :w
       @rep = "♔"
@@ -242,8 +258,8 @@ class King < Piece
 end
 
 class Pawn < Piece
-  def initialize(color, coords)
-    super(color, coords)
+  def initialize(color, coords, board)
+    super(color, coords, board)
     case color
     when :w
       @rep = "♙"
