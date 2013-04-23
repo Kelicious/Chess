@@ -25,6 +25,10 @@ class Board
     @grid[b_row][4] = King.new(color, [b_row,3], self)
   end
 
+  def show
+    puts display
+  end
+
   def display
     first_row = "  a b c d e f g h"
     result = [first_row]
@@ -43,7 +47,7 @@ class Board
   end
 
   def piece_at(pos)
-    get_piece(self.pos_to_coords(pos))
+    get_piece(Board.pos_to_coords(pos))
   end
 
   def move(start, finish)
@@ -118,9 +122,20 @@ class Knight < Piece
   ]
 
   def move_set
-    MOVES.map do |dx, dy|
-      [coords[0] + dx, coords[1] + dy]
-    end.select {|coord| Board.on_board?(coord)}
+    possible_moves = []
+    MOVES.each do |dx, dy|
+      sq_to_add = [coords[0] + dx, coords[1] + dy]
+
+      next unless Board.on_board?(sq_to_add)
+      sq_content = @board.get_piece(sq_to_add)
+      if sq_content.nil?
+        possible_moves << sq_to_add
+      else
+        (possible_moves << sq_to_add) unless same_color?(sq_content)
+      end
+    end
+
+    possible_moves
   end
 end
 
@@ -251,9 +266,23 @@ class King < Piece
   ]
 
   def move_set
-    MOVES.map do |dx, dy|
-      [coords[0] + dx, coords[1] + dy]
-    end.select {|coord| Board.on_board?(coord)}
+    possible_moves = []
+
+    MOVES.each do |dx, dy|
+      x,y = @coords
+      sq_to_add = [x + dx, y + dy]
+
+      next unless Board.on_board?(sq_to_add)
+      sq_content = @board.get_piece(sq_to_add)
+
+      if sq_content.nil?
+        possible_moves << sq_to_add
+      else
+        (possible_moves << sq_to_add) unless same_color?(sq_content)
+      end
+    end
+
+    possible_moves
   end
 end
 
@@ -267,4 +296,45 @@ class Pawn < Piece
       @rep = "♟"
     end
   end
+
+  def move_set
+    possible_moves = []
+    cur_x, cur_y = self.coords
+    m = (self.color == :b) ? 1 : -1
+    moves = {
+      :forw => [[m,0], [2 * m,0]],
+      :diag => [[m,1], [m,-1]]
+    }
+
+
+    # check if one step forward moves are allowed
+    sq_to_add = [cur_x + moves[:forw][0][0], cur_y + moves[:forw][0][1]]
+    one_step = Board.on_board?(sq_to_add) && (@board.get_piece(sq_to_add).nil?)
+    if one_step
+      possible_moves << sq_to_add
+    end
+
+    # check if two step forward moves are allowed
+    sq_to_add = [cur_x + moves[:forw][1][0], cur_y + moves[:forw][1][1]]
+    two_step = Board.on_board?(sq_to_add) && (@board.get_piece(sq_to_add).nil?)
+    if (one_step && two_step) && [1,6].include?(cur_x)
+      possible_moves << sq_to_add
+    end
+
+    # check if diagonal moves are allowed
+    moves[:diag].each do |dx, dy|
+      sq_to_add = [cur_x + dx, cur_y + dy]
+      sq_content = @board.get_piece(sq_to_add)
+      if sq_content && !same_color?(sq_content)
+        (possible_moves << sq_to_add) unless same_color?(sq_content)
+      end
+    end
+
+    possible_moves
+  end
 end
+
+
+
+
+
