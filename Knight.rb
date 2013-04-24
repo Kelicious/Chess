@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require_relative "Piece.rb"
-
+# REV: gorgeous
 class Knight < Piece
   @@MOVES = [
     [1,2],

@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require_relative "Piece.rb"
-
+# REV: not sure if it is clear if the @@MOVES are [x,y] or [y,x] coords
 class King < Piece
   @@MOVES = [
     [0,1],

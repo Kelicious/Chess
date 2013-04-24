@@ -5,7 +5,7 @@ require_relative "Piece.rb"
 class Pawn < Piece
   def initialize(color, coords, board)
     super(color, coords, board)
-    m = 0
+    m = 0 # REV: not clear what m is from variable name
     m = (self.color == :b) ? 1 : -1
     @rep = (self.color == :b) ? "♟" : "♙"
 

@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+# REV: hard to critique here, your methods are aptly named and clearly laid out
 require_relative "Piece.rb"
 require_relative "Pawn.rb"
 require_relative "Knight.rb"

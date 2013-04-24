@@ -1,5 +1,5 @@
 require_relative "Board.rb"
-
+# REV: freaking love this breakdown of SlidingMove
 module SlidingMove
   def build_move_set(moves)
     possible_moves = []

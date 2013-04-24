@@ -2,7 +2,7 @@
 
 require_relative "SlidingMove.rb"
 require_relative "Piece.rb"
-
+# REV: Clean, clear, simple.
 class Bishop < Piece
   @@MOVES = [
     [1,1],
