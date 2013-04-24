@@ -9,6 +9,26 @@ require_relative "King.rb"
 require_relative "Queen.rb"
 
 class Board
+  # Class methods
+  def self.on_board?(coords)
+    coords.all? {|coord| coord.between?(0, 7)}
+  end
+
+  def self.pos_to_coords(pos)
+    letter, number = pos.split("")
+    y = letter.ord - 'a'.ord
+    x = 8 - number.to_i
+    [x, y]
+  end
+
+  def self.coords_to_pos(coords)
+    x, y = coords
+    letter = (y.ord + 'a'.ord).chr
+    number = 8 - x
+    "#{letter}#{number}"
+  end
+
+  # Instance methods
   def initialize
     @grid = Array.new(8) {Array.new(8, nil)}
 
@@ -62,31 +82,13 @@ class Board
     move_piece(Board.pos_to_coords(start), Board.pos_to_coords(finish))
   end
 
-  def self.on_board?(pos)
-    pos.all? {|coord| coord.between?(0, 7)}
-  end
-
-  def self.pos_to_coords(pos)
-    letter, number = pos.split("")
-    y = letter.ord - 'a'.ord
-    x = 8 - number.to_i
-    [x, y]
-  end
-
-  def self.coords_to_pos(coords)
-    x, y = coords
-    letter = (y.ord + 'a'.ord).chr
-    number = 8 - x
-    "#{letter}#{number}"
-  end
-
   def move_legal?(color, start, finish)
     return false if start == finish
     coords = [Board.pos_to_coords(start), Board.pos_to_coords(finish)]
     s, f = coords
     return false unless your_piece?(color, s)
     return false unless move_in_moveset?(s, f)
-    return false unless move_avoids_check?(color, s, f)
+    return false unless move_avoids_check?(s, f)
     true
   end
 
@@ -113,12 +115,12 @@ class Board
     @grid[x][y] = nil
   end
 
-  def move_avoids_check?(color, start, finish)
-    piece = get_piece(start)
+  def move_avoids_check?(start, finish)
+    piece_to_move = get_piece(start)
     temp_square = get_piece(finish)
 
     move_piece(start, finish)
-    if color_in_check != color
+    if color_in_check != piece_to_move.color
       move_piece(finish, start)
       @grid[finish[0]][finish[1]] = temp_square
       true
@@ -164,18 +166,8 @@ class Board
   def can_avoid_check?(color)
     pieces = pieces_by_color(color)
     pieces.each do |piece|
-      start = piece.coords
       piece.move_set.each do |finish|
-        temp_square = get_piece(finish)
-        move_piece(start, finish)
-        if color_in_check != color
-          move_piece(finish, start)
-          @grid[finish[0]][finish[1]] = temp_square
-          return true
-        end
-
-        move_piece(finish, start)
-        @grid[finish[0]][finish[1]] = temp_square
+        return true if move_avoids_check?(piece.coords, finish)
       end
     end
 

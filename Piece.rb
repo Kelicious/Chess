@@ -6,9 +6,7 @@ class Piece
   attr_accessor :coords, :color, :rep, :board
 
   def initialize(color, coords, board)
-    @color = color
-    @coords = coords
-    @board = board
+    @color, @coords, @board = color, coords, board
   end
 
   def same_color?(other_piece)

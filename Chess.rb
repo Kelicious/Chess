@@ -18,6 +18,7 @@ class Chess
 
   def end_game
     loser_color = @board.color_in_checkmate
+
     winner, loser = "", ""
     case loser_color
     when :w
