@@ -2,6 +2,56 @@
 
 class Chess
   attr_accessor :board
+
+
+  def initialize
+    @board = Board.new
+    @b = HumanPlayer.new(:b)
+    @w = HumanPlayer.new(:w)
+  end
+
+  def greeting
+    puts "Welcome to chess!"
+  end
+
+  def end_game
+    puts "Thank you for playing!"
+  end
+
+  def play
+    greeting
+
+    while true
+      half_turn(@w)
+      half_turn(@b)
+    end
+
+    end_game
+  end
+
+  def half_turn(player)
+    @board.show
+    # until legal_move_made
+    color = player.color == :w ? "White" : "Black"
+    puts "#{color} player's turn"
+    s, f = player.attempt_move
+    # check if coordinates are legal, if yes, pass them to move
+    @board.move(s,f)
+  end
+end
+
+class HumanPlayer
+  attr_accessor :color
+
+  def initialize(color)
+    @color = color
+  end
+
+  def attempt_move
+    puts "Please enter your move (e.g. e2 e4)"
+    start, finish = gets.chomp.split
+  end
+
 end
 
 class Board
@@ -78,6 +128,41 @@ class Board
     letter = (y.ord + 'a'.ord).chr
     number = 8 - x
     "#{letter}#{number}"
+  end
+
+  def move_legal
+    return your_piece && not_check && move_in_moveset
+  end
+
+  def your_piece?(start, player)
+    return false unless piece_at(start)
+    piece_at(start).color == player.color
+  end
+
+  def pieces_by_color(color)
+    @grid.flatten.select {|square| square && square.color == color}
+  end
+
+  def move_in_moveset(start, finish)
+    get_piece(start).move_set.include?(finish)
+  end
+
+  def complete_moveset(color)
+    possible_moves = []
+    pieces_by_color(color).each do |piece|
+      possible_moves += piece.move_set
+    end
+
+    possible_moves.uniq
+  end
+
+  def color_in_check
+    [[:w, :b], [:b, :w]].each do |color, o_color|
+      o_king = pieces_by_color(o_color).select {|piece| piece.is_a?(King)}
+      return o_color if complete_moveset(color).include?(o_king.coords)
+    end
+
+    nil
   end
 end
 
