@@ -3,7 +3,6 @@
 class Chess
   attr_accessor :board
 
-
   def initialize
     @board = Board.new
     @b = HumanPlayer.new(:b)
@@ -15,15 +14,32 @@ class Chess
   end
 
   def end_game
-    puts "Thank you for playing!"
+    loser_color = @board.color_in_checkmate
+    winner, loser = "", ""
+    case loser_color
+    when :w
+      winner, loser = "Black", "White"
+    when :b
+      winner, loser = "White", "Black"
+    else
+      winner = "No"
+    end
+
+    puts "#{winner} player wins!"
+    puts "#{loser} player, take some Chess lessons." if winner != "No"
   end
 
   def play
     greeting
 
     while true
-      half_turn(@w)
-      half_turn(@b)
+      [@w, @b].each do |player|
+        if !(@board.color_in_checkmate || @board.color_in_stalemate)
+          half_turn(player)
+        end
+      end
+
+      break if (@board.color_in_checkmate || @board.color_in_stalemate)
     end
 
     end_game
@@ -31,11 +47,13 @@ class Chess
 
   def half_turn(player)
     @board.show
-    # until legal_move_made
     color = player.color == :w ? "White" : "Black"
     puts "#{color} player's turn"
-    s, f = player.attempt_move
-    # check if coordinates are legal, if yes, pass them to move
+    s, f = nil, nil
+    until @board.move_legal?(player.color, s, f)
+      s, f = player.attempt_move
+    end
+
     @board.move(s,f)
   end
 end
@@ -51,7 +69,6 @@ class HumanPlayer
     puts "Please enter your move (e.g. e2 e4)"
     start, finish = gets.chomp.split
   end
-
 end
 
 class Board
@@ -72,7 +89,7 @@ class Board
     [1,6].each {|col| @grid[b_row][col] = Knight.new(color, [b_row, col],self)}
     [2,5].each {|col| @grid[b_row][col] = Bishop.new(color, [b_row, col],self)}
     @grid[b_row][3] = Queen.new(color, [b_row,3], self)
-    @grid[b_row][4] = King.new(color, [b_row,3], self)
+    @grid[b_row][4] = King.new(color, [b_row,4], self)
   end
 
   def show
@@ -130,20 +147,43 @@ class Board
     "#{letter}#{number}"
   end
 
-  def move_legal
-    return your_piece && not_check && move_in_moveset
+  def move_legal?(color, start, finish)
+    return false if start == finish
+    coords = [Board.pos_to_coords(start), Board.pos_to_coords(finish)]
+    s, f = coords
+    return false unless your_piece?(color, s)
+    return false unless move_in_moveset?(s, f)
+    return false unless move_avoids_check?(color, s, f)
+    true
   end
 
-  def your_piece?(start, player)
-    return false unless piece_at(start)
-    piece_at(start).color == player.color
+  def move_avoids_check?(color, start, finish)
+    piece = get_piece(start)
+    temp_square = get_piece(finish)
+
+    move_piece(start, finish)
+    if color_in_check != color
+      move_piece(finish, start)
+      @grid[finish[0]][finish[1]] = temp_square
+      true
+    else
+      move_piece(finish, start)
+      @grid[finish[0]][finish[1]] = temp_square
+
+      false
+    end
+  end
+
+  def your_piece?(color, start)
+    return false unless get_piece(start)
+    get_piece(start).color == color
   end
 
   def pieces_by_color(color)
     @grid.flatten.select {|square| square && square.color == color}
   end
 
-  def move_in_moveset(start, finish)
+  def move_in_moveset?(start, finish)
     get_piece(start).move_set.include?(finish)
   end
 
@@ -158,8 +198,48 @@ class Board
 
   def color_in_check
     [[:w, :b], [:b, :w]].each do |color, o_color|
-      o_king = pieces_by_color(o_color).select {|piece| piece.is_a?(King)}
+      o_king = pieces_by_color(o_color).find {|piece| piece.is_a?(King)}
       return o_color if complete_moveset(color).include?(o_king.coords)
+    end
+
+    nil
+  end
+
+  def can_avoid_check?(color)
+    pieces = pieces_by_color(color)
+    pieces.each do |piece|
+      start = piece.coords
+      piece.move_set.each do |finish|
+        temp_square = get_piece(finish)
+        move_piece(start, finish)
+        if color_in_check != color
+          move_piece(finish, start)
+          @grid[finish[0]][finish[1]] = temp_square
+          return true
+        end
+
+        move_piece(finish, start)
+        @grid[finish[0]][finish[1]] = temp_square
+      end
+    end
+
+    false
+  end
+
+  def color_in_checkmate
+    [:w, :b].each do |color|
+      if color_in_check == color && !can_avoid_check?(color)
+        return color
+      end
+    end
+
+    nil
+  end
+
+  def color_in_stalemate
+    return nil if color_in_check
+    [:w, :b].each do |color|
+      return color if !can_avoid_check?(color)
     end
 
     nil
@@ -423,3 +503,9 @@ end
 
 
 
+
+
+
+
+game = Chess.new
+game.play
