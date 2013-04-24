@@ -18,4 +18,14 @@ class Piece
   def move_set
 
   end
+
+  private
+
+  def cur_x
+    self.coords[0]
+  end
+
+  def cur_y
+    self.coords[1]
+  end
 end

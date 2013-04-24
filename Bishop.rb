@@ -13,12 +13,7 @@ class Bishop < Piece
 
   def initialize(color, coords, board)
     super(color, coords, board)
-    case color
-    when :w
-      @rep = "♗"
-    when :b
-      @rep = "♝"
-    end
+    @rep = (self.color == :b) ? "♝" : "♗"
   end
 
   include SlidingMove

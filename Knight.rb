@@ -16,18 +16,13 @@ class Knight < Piece
 
   def initialize(color, coords, board)
     super(color, coords, board)
-    case color
-    when :w
-      @rep = "♘"
-    when :b
-      @rep = "♞"
-    end
+    @rep = (self.color == :b) ? "♞" : "♘"
   end
 
   def move_set
     possible_moves = []
     @@MOVES.each do |dx, dy|
-      sq_to_add = [coords[0] + dx, coords[1] + dy]
+      sq_to_add = [cur_x + dx, cur_y + dy]
 
       next unless Board.on_board?(sq_to_add)
       sq_content = @board.get_piece(sq_to_add)

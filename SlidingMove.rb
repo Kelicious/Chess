@@ -3,11 +3,10 @@ require_relative "Board.rb"
 module SlidingMove
   def build_move_set(moves)
     possible_moves = []
-    x,y = coords
 
     moves.each do |dx, dy|
       (1..7).each do |i|
-        sq_to_add = [x + i*dx, y + i*dy]
+        sq_to_add = [cur_x + i*dx, cur_y + i*dy]
 
         next unless Board.on_board?(sq_to_add)
         sq_content = @board.get_piece(sq_to_add)

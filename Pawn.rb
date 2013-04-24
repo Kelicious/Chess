@@ -22,29 +22,24 @@ class Pawn < Piece
   private
 
   def one_step_moves
-    cur_x, cur_y = self.coords
     sq_to_add = [cur_x + @moves[:forw][0][0], cur_y + @moves[:forw][0][1]]
-    one_step = Board.on_board?(sq_to_add) && (@board.get_piece(sq_to_add).nil?)
-    one_step ? [sq_to_add] : []
+    valid_spot = Board.on_board?(sq_to_add) && (@board.get_piece(sq_to_add).nil?)
+    valid_spot ? [sq_to_add] : []
   end
 
   def two_step_moves
     return [] if one_step_moves.empty?
-    cur_x, cur_y = self.coords
     sq_to_add = [cur_x + @moves[:forw][1][0], cur_y + @moves[:forw][1][1]]
-    two_step = Board.on_board?(sq_to_add) && (@board.get_piece(sq_to_add).nil?)
-    ([1,6].include?(cur_x) && two_step) ? [sq_to_add] : []
+    valid_spot = Board.on_board?(sq_to_add) && (@board.get_piece(sq_to_add).nil?)
+    ([1,6].include?(cur_x) && valid_spot) ? [sq_to_add] : []
   end
 
   def diagonal_moves
-    cur_x, cur_y = self.coords
     result = []
     @moves[:diag].each do |dx, dy|
       sq_to_add = [cur_x + dx, cur_y + dy]
       sq_content = @board.get_piece(sq_to_add)
-      if sq_content && !same_color?(sq_content)
-        (result << sq_to_add) unless same_color?(sq_content)
-      end
+      (result << sq_to_add) if (sq_content && !same_color?(sq_content))
     end
 
     result
