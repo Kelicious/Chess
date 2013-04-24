@@ -3,17 +3,7 @@
 require_relative "Piece.rb"
 
 class Knight < Piece
-  def initialize(color, coords, board)
-    super(color, coords, board)
-    case color
-    when :w
-      @rep = "♘"
-    when :b
-      @rep = "♞"
-    end
-  end
-
-  MOVES = [
+  @@MOVES = [
     [1,2],
     [2,1],
     [1,-2],
@@ -24,9 +14,19 @@ class Knight < Piece
     [-2,-1]
   ]
 
+  def initialize(color, coords, board)
+    super(color, coords, board)
+    case color
+    when :w
+      @rep = "♘"
+    when :b
+      @rep = "♞"
+    end
+  end
+
   def move_set
     possible_moves = []
-    MOVES.each do |dx, dy|
+    @@MOVES.each do |dx, dy|
       sq_to_add = [coords[0] + dx, coords[1] + dy]
 
       next unless Board.on_board?(sq_to_add)

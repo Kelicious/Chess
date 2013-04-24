@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require_relative "Piece.rb"
 require_relative "Pawn.rb"
 require_relative "Knight.rb"
@@ -7,8 +9,6 @@ require_relative "King.rb"
 require_relative "Queen.rb"
 
 class Board
-  attr_accessor :grid
-
   def initialize
     @grid = Array.new(8) {Array.new(8, nil)}
 
@@ -31,17 +31,23 @@ class Board
     puts display
   end
 
-  def display
-    first_row = "  a b c d e f g h"
-    result = [first_row]
-    @grid.size.times {|i| result << display_row(i)}
-    result
+  def color_in_checkmate
+    [:w, :b].each do |color|
+      if color_in_check == color && !can_avoid_check?(color)
+        return color
+      end
+    end
+
+    nil
   end
 
-  def display_row(i)
-    r = (8 - i).to_s
-    @grid[i].each {|sq| r << (sq.nil? ? "  " : " #{sq.rep}")}
-    r
+  def color_in_stalemate
+    return nil if color_in_check
+    [:w, :b].each do |color|
+      return color if !can_avoid_check?(color)
+    end
+
+    nil
   end
 
   def get_piece(coords)
@@ -54,14 +60,6 @@ class Board
 
   def move(start, finish)
     move_piece(Board.pos_to_coords(start), Board.pos_to_coords(finish))
-  end
-
-  def move_piece(start, finish)
-    x, y = start
-    a, b = finish
-    @grid[a][b] = @grid[x][y]
-    @grid[a][b].coords = [a,b]
-    @grid[x][y] = nil
   end
 
   def self.on_board?(pos)
@@ -90,6 +88,29 @@ class Board
     return false unless move_in_moveset?(s, f)
     return false unless move_avoids_check?(color, s, f)
     true
+  end
+
+  private
+
+  def display
+    first_row = "  a b c d e f g h"
+    result = [first_row]
+    @grid.size.times {|i| result << display_row(i)}
+    result
+  end
+
+  def display_row(i)
+    r = (8 - i).to_s
+    @grid[i].each {|sq| r << (sq.nil? ? "  " : " #{sq.rep}")}
+    r
+  end
+
+  def move_piece(start, finish)
+    x, y = start
+    a, b = finish
+    @grid[a][b] = @grid[x][y]
+    @grid[a][b].coords = [a,b]
+    @grid[x][y] = nil
   end
 
   def move_avoids_check?(color, start, finish)
@@ -159,24 +180,5 @@ class Board
     end
 
     false
-  end
-
-  def color_in_checkmate
-    [:w, :b].each do |color|
-      if color_in_check == color && !can_avoid_check?(color)
-        return color
-      end
-    end
-
-    nil
-  end
-
-  def color_in_stalemate
-    return nil if color_in_check
-    [:w, :b].each do |color|
-      return color if !can_avoid_check?(color)
-    end
-
-    nil
   end
 end

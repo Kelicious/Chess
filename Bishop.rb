@@ -4,6 +4,13 @@ require_relative "SlidingMove.rb"
 require_relative "Piece.rb"
 
 class Bishop < Piece
+  @@MOVES = [
+    [1,1],
+    [1,-1],
+    [-1,1],
+    [-1,-1]
+  ]
+
   def initialize(color, coords, board)
     super(color, coords, board)
     case color
@@ -14,16 +21,9 @@ class Bishop < Piece
     end
   end
 
-  MOVES = [
-    [1,1],
-    [1,-1],
-    [-1,1],
-    [-1,-1]
-  ]
-
   include SlidingMove
 
   def move_set
-    build_move_set(MOVES)
+    build_move_set(@@MOVES)
   end
 end
