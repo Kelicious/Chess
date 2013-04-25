@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+# REV: clear enough.
 require_relative "SlidingMove.rb"
 require_relative "Piece.rb"
 

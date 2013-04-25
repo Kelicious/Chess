@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+# REV: Looks good to me
 require_relative "Board.rb"
 
 class Piece
