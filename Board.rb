@@ -38,7 +38,9 @@ class Board
 
   def setup_pieces(color)
     p_row, b_row = (color == :w) ? [6,7] : [1,0]
-
+# REV: Really nice ternary operator and parallel assignment combo. 
+# REV: It's glad to see someone use the same kind of logic as us for 
+# REV: filling out their board.
     (0..7).each {|col| @grid[p_row][col] = Pawn.new(color, [p_row,col],self)}
     [0,7].each {|col| @grid[b_row][col] = Rook.new(color, [b_row,col],self)}
     [1,6].each {|col| @grid[b_row][col] = Knight.new(color, [b_row, col],self)}
@@ -50,7 +52,7 @@ class Board
   def show
     puts display
   end
-
+# REV: Man, this show method shouldn't exist just to do that.
   def color_in_checkmate
     [:w, :b].each do |color|
       if color_in_check == color && !can_avoid_check?(color)
@@ -91,7 +93,12 @@ class Board
     return false unless move_avoids_check?(s, f)
     true
   end
-
+# REV: Read through all of the methods called by move_avoids_check 
+# REV: (aka everything in private), and you guys really planned this 
+# REV: thing out. We used the exact same strategies, but we were 
+# REV: unable to fully execute them. For one, I know we need to 
+# REV: work on our naming. Your methods in move_legal onwards read 
+# REV: really easily. 
   private
 
   def display
@@ -136,7 +143,9 @@ class Board
     return false unless get_piece(start)
     get_piece(start).color == color
   end
-
+# REV: While I wasn't a fan of the level of abstraction in show, 
+# REV: display, display_row, and Chess#greeting, I bet these little 
+# REV: methods (your_piece? and pieces_by_color) were really useful. 
   def pieces_by_color(color)
     @grid.flatten.select {|square| square && square.color == color}
   end

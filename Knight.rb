@@ -32,7 +32,8 @@ class Knight < Piece
         (possible_moves << sq_to_add) unless same_color?(sq_content)
       end
     end
-
+# REV: Knights were undoubtedly the easiest to make, but I found myself
+# REV: getting a big confused by the sq_to_add naming. Just a small detail.
     possible_moves
   end
 end

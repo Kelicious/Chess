@@ -21,7 +21,9 @@ class Queen < Piece
   end
 
   include SlidingMove
-
+# REV: Just a thought, but did you ever test just adding a Rook and Bishop's move sets together?
+# REV: Our queen's equivalent of build_move_set was just a sum like the following, and it worked fine.
+# REV: eg. Bishop.new(current position, etc).move_set + Rook.new(current position, etc.).move_set
   def move_set
     build_move_set(@@MOVES)
   end

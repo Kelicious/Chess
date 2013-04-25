@@ -7,7 +7,8 @@ module SlidingMove
     moves.each do |dx, dy|
       (1..7).each do |i|
         sq_to_add = [cur_x + i*dx, cur_y + i*dy]
-
+# REV: This modular dx,dy approach is so much more elegant than our 
+# REV: hard coded dx,dy values piece type approach...
         next unless Board.on_board?(sq_to_add)
         sq_content = @board.get_piece(sq_to_add)
 

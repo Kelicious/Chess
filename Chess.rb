@@ -42,7 +42,7 @@ class Chess
           half_turn(player)
         end
       end
-
+# REV: Love that you called each on an array of players with a half_turn method. Really cleans things up.
       break if (@board.color_in_checkmate || @board.color_in_stalemate)
     end
 

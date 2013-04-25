@@ -10,3 +10,5 @@ class HumanPlayer
     start, finish = gets.chomp.split
   end
 end
+
+# REV: Simple and clean, not much to say here.

@@ -15,7 +15,7 @@ class Rook < Piece
     super(color, coords, board)
     @rep = (self.color == :b) ? "♜" : "♖"
   end
-
+# REV: This executes our logic in so much more concise of a way. I'll have to remember to use modules from now on.
   include SlidingMove
 
   def move_set

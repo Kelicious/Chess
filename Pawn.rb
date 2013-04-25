@@ -20,7 +20,9 @@ class Pawn < Piece
   end
 
   private
-
+# REV: Thus far in the code review, you guys had good variable and function names,
+# REV: but I found myself having to stop and really think about the
+# REV: @moves[:direction][int][int] business. 
   def one_step_moves
     sq_to_add = [cur_x + @moves[:forw][0][0], cur_y + @moves[:forw][0][1]]
     valid_spot = Board.on_board?(sq_to_add) && (@board.get_piece(sq_to_add).nil?)

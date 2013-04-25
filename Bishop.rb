@@ -17,7 +17,9 @@ class Bishop < Piece
   end
 
   include SlidingMove
-
+# REV: As was with the Rook, we knew that we were going to have to specify
+# REV: dy,dx values, but just couldn't even imagine turning it into a
+# REV: shared modules. We're not very good at DRY...
   def move_set
     build_move_set(@@MOVES)
   end
