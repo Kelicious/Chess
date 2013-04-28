@@ -22,11 +22,11 @@ class Piece
 
   private
 
-  def cur_x
+  def cur_row
     self.coords[0]
   end
 
-  def cur_y
+  def cur_col
     self.coords[1]
   end
 end

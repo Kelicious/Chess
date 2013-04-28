@@ -11,8 +11,8 @@ class King < Piece
   def move_set
     possible_moves = []
 
-    (HORIZONTAL_DIRS + DIAGONAL_DIRS).each do |dx, dy|
-      sq_to_add = [cur_x + dx, cur_y + dy]
+    (HORIZONTAL_DIRS + DIAGONAL_DIRS).each do |drow, dcol|
+      sq_to_add = [cur_row + drow, cur_col + dcol]
 
       next unless Board.on_board?(sq_to_add)
       sq_content = @board.get_piece(sq_to_add)

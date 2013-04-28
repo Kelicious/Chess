@@ -21,8 +21,8 @@ class Knight < Piece
 
   def move_set
     possible_moves = []
-    @@MOVES.each do |dx, dy|
-      sq_to_add = [cur_x + dx, cur_y + dy]
+    @@MOVES.each do |drow, dcol|
+      sq_to_add = [cur_row + drow, cur_col + dcol]
 
       next unless Board.on_board?(sq_to_add)
       sq_content = @board.get_piece(sq_to_add)

@@ -16,15 +16,15 @@ class Board
 
   def self.pos_to_coords(pos)
     letter, number = pos.split("")
-    y = letter.ord - 'a'.ord
-    x = 8 - number.to_i
-    [x, y]
+    col = letter.ord - 'a'.ord
+    row = 8 - number.to_i
+    [row, col]
   end
 
   def self.coords_to_pos(coords)
-    x, y = coords
-    letter = (y.ord + 'a'.ord).chr
-    number = 8 - x
+    row, col = coords
+    letter = (col.ord + 'a'.ord).chr
+    number = 8 - row
     "#{letter}#{number}"
   end
 
@@ -84,11 +84,10 @@ class Board
 
   def move_legal?(color, start, finish)
     return false if start == finish
-    coords = [Board.pos_to_coords(start), Board.pos_to_coords(finish)]
-    s, f = coords
-    return false unless your_piece?(color, s)
-    return false unless move_in_moveset?(s, f)
-    return false unless move_avoids_check?(s, f)
+    start, finish = [Board.pos_to_coords(start), Board.pos_to_coords(finish)]
+    return false unless your_piece?(color, start)
+    return false unless move_in_moveset?(start, finish)
+    return false unless move_avoids_check?(start, finish)
     true
   end
 
@@ -102,17 +101,17 @@ class Board
   end
 
   def display_row(i)
-    r = (8 - i).to_s
-    @grid[i].each {|sq| r << (sq.nil? ? "  " : " #{sq.rep}")}
-    r
+    row = (8 - i).to_s
+    @grid[i].each {|sq| row << (sq.nil? ? "  " : " #{sq.rep}")}
+    row
   end
 
   def move_piece(start, finish)
-    x, y = start
-    a, b = finish
-    @grid[a][b] = @grid[x][y]
-    @grid[a][b].coords = [a,b]
-    @grid[x][y] = nil
+    s_row, s_col = start
+    f_row, f_col = finish
+    @grid[f_row][f_col] = @grid[s_row][s_col]
+    @grid[f_row][f_col].coords = [f_row, f_col]
+    @grid[s_row][s_col] = nil
   end
 
   def move_avoids_check?(start, finish)

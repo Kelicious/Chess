@@ -4,9 +4,9 @@ module SlidingMove
   def build_move_set(moves)
     possible_moves = []
 
-    moves.each do |dx, dy|
+    moves.each do |drow, dcol|
       (1..7).each do |i|
-        sq_to_add = [cur_x + i*dx, cur_y + i*dy]
+        sq_to_add = [cur_row + i*drow, cur_col + i*dcol]
 
         next unless Board.on_board?(sq_to_add)
         sq_content = @board.get_piece(sq_to_add)

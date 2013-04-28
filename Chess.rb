@@ -4,8 +4,6 @@ require_relative "Board.rb"
 require_relative "HumanPlayer.rb"
 
 class Chess
-  attr_accessor :board
-
   def initialize
     @board = Board.new
     @b = HumanPlayer.new(:b)
@@ -53,11 +51,11 @@ class Chess
     @board.show
     color = player.color == :w ? "White" : "Black"
     puts "#{color} player's turn"
-    s, f = nil, nil
-    until @board.move_legal?(player.color, s, f)
-      s, f = player.attempt_move
+    start, finish = nil, nil
+    until @board.move_legal?(player.color, start, finish)
+      start, finish = player.attempt_move
     end
 
-    @board.move(s,f)
+    @board.move(start, finish)
   end
 end
