@@ -47,6 +47,8 @@ class Chess
     end_game
   end
 
+  private
+
   def half_turn(player)
     @board.show
     color = player.color == :w ? "White" : "Black"
@@ -58,4 +60,8 @@ class Chess
 
     @board.move(start, finish)
   end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  Chess.new.play
 end

@@ -5,13 +5,12 @@ require_relative "Piece.rb"
 class Pawn < Piece
   def initialize(color, coords, board)
     super(color, coords, board)
-    m = 0
-    m = (self.color == :b) ? 1 : -1
+    direction = (self.color == :b) ? 1 : -1
     @rep = (self.color == :b) ? "♟" : "♙"
 
     @moves = {
-      :forw => [[m,0], [2 * m,0]],
-      :diag => [[m,1], [m,-1]]
+      :forw => [[direction, 0], [2 * direction, 0]],
+      :diag => [[direction, 1], [direction, -1]]
     }
   end
 
