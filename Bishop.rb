@@ -4,21 +4,14 @@ require_relative "SlidingMove.rb"
 require_relative "Piece.rb"
 
 class Bishop < Piece
-  @@MOVES = [
-    [1,1],
-    [1,-1],
-    [-1,1],
-    [-1,-1]
-  ]
+  include SlidingMove
 
   def initialize(color, coords, board)
     super(color, coords, board)
     @rep = (self.color == :b) ? "♝" : "♗"
   end
 
-  include SlidingMove
-
   def move_set
-    build_move_set(@@MOVES)
+    build_move_set(DIAGONAL_DIRS)
   end
 end
